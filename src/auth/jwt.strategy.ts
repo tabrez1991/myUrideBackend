@@ -35,6 +35,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       // User does not have the required roles
       // throw new HttpException('Insufficient permissions', HttpStatus.FORBIDDEN);
     } catch (error) {
+      console.log(error)
       return done(error, false);
     }
   }

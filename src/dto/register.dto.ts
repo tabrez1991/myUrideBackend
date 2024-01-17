@@ -17,4 +17,8 @@ export class RegisterDTO {
   @IsString()
   @IsNotEmpty()
   name: string;
+
+  @IsString()
+  @IsNotEmpty()
+  lastName: string;
 }

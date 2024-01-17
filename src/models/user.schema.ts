@@ -18,6 +18,12 @@ export class User extends Document {
   @Prop({ type: String, required: true })
   name: string;
 
+  @Prop({ type: String, default: null })
+  middleName: string;
+
+  @Prop({ type: String, required: true })
+  lastName: string;
+
   @Prop({ type: Boolean, default: null })
   email_verified: string;
 

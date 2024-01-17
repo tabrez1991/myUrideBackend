@@ -17,22 +17,32 @@ import { UpdateUserDto } from 'src/dto/updateUser.dto';
 import { User } from 'src/models/user.schema';
 import { DeleteUserDTO } from 'src/dto/deleteUser.dto';
 import { UserStatus } from 'src/enums/userStatus.enum';
+import { LogoutUserDTO } from 'src/dto/logoutUser.dto';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>) { }
 
   async create(RegisterDTO: RegisterDTO) {
-    const { email } = RegisterDTO;
-    const user = await this.userModel.findOne({ email });
-    if (user) {
-      throw new HttpException('user already exists', HttpStatus.BAD_REQUEST);
+    try {
+      const { email, mobile } = RegisterDTO;
+      const user = await this.userModel.findOne({
+        $or: [
+          { email: email },
+          { mobile: mobile }
+        ]
+      });
+      if (user) {
+        throw new HttpException('user already exists', HttpStatus.BAD_REQUEST);
+      }
+      const createdUser = new this.userModel(RegisterDTO);
+      await createdUser.save();
+      return this.sanitizeUser(createdUser);
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(error.response, HttpStatus.BAD_REQUEST);
     }
-
-    const createdUser = new this.userModel(RegisterDTO);
-
-    await createdUser.save();
-    return this.sanitizeUser(createdUser);
   }
 
   async findByPayload(payload: Payload) {
@@ -109,10 +119,23 @@ export class UserService {
     return this.sanitizeUser(user);
   }
 
-  async getUsers(page = 1, limit = 10): Promise<UserDto[]> {
+  async getUsers(page = 1, limit = 10, searchQuery?: string): Promise<UserDto[]> {
     const skip = (page - 1) * limit;
 
-    const users = await this.userModel.find().skip(skip).limit(limit).exec();
+    // Build the base query
+    const query = this.userModel.find();
+
+    // Apply search filter if provided
+    if (searchQuery) {
+      query.or([
+        { name: { $regex: new RegExp(searchQuery, 'i') } },
+        { email: { $regex: new RegExp(searchQuery, 'i') } },
+        { mobileNumber: { $regex: new RegExp(searchQuery, 'i') } },
+      ]);
+    }
+
+    // Apply pagination
+    const users = await query.skip(skip).limit(limit).exec();
 
     return users.map((user: User) => {
       const tempUser = user.toObject();
@@ -122,8 +145,9 @@ export class UserService {
     });
   }
 
+
   async updateUser(UpdateUserDto: UpdateUserDto): Promise<User> {
-    const { email, name, mobile, password, profile_picture, roles } =
+    const { email, name, middleName, lastName, mobile, password, profile_picture, roles } =
       UpdateUserDto;
     let user = await this.userModel.findOne({ email });
     if (!user) {
@@ -132,12 +156,16 @@ export class UserService {
 
     const hashed = password ? await bcrypt.hash(password, 10) : user.password;
 
+    const profilePicture = profile_picture ? profile_picture : user.profile_picture;
+
     const updateUserDetails = await this.userModel.updateOne(
       { _id: user._id },
       {
         name: name,
+        middleName: middleName,
+        lastName: lastName,
         mobile: mobile,
-        profile_picture: profile_picture,
+        profile_picture: profilePicture,
         roles: roles,
         password: hashed,
       },
@@ -168,6 +196,52 @@ export class UserService {
     }
     return this.sanitizeUser(user);
   }
+
+  async activateUser(DeleteUserDTO: DeleteUserDTO): Promise<User> {
+    try {
+      const { email } = DeleteUserDTO;
+      let user = await this.userModel.findOne({ email });
+      if (!user) {
+        throw new HttpException('user doesnt exists', HttpStatus.BAD_REQUEST);
+      }
+
+      const updateUserDetails = await this.userModel.updateOne(
+        { _id: user._id },
+        {
+          status: UserStatus.ACTIVE,
+          jwttoken: null,
+          refreshToken: null,
+        },
+      );
+      if (updateUserDetails) {
+        user = await this.userModel.findOne({ email });
+      }
+      return this.sanitizeUser(user);
+    } catch (error) {
+      throw new HttpException(error.response, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async logoutUser(LogoutUserDTO: LogoutUserDTO): Promise<User> {
+    const { email } = LogoutUserDTO;
+    let user = await this.userModel.findOne({ email });
+    if (!user) {
+      throw new HttpException('user doesnt exists', HttpStatus.BAD_REQUEST);
+    }
+
+    const updateUserDetails = await this.userModel.updateOne(
+      { _id: user._id },
+      {
+        jwttoken: null,
+        refreshToken: null,
+      },
+    );
+    if (updateUserDetails) {
+      user = await this.userModel.findOne({ email });
+    }
+    return this.sanitizeUser(user);
+  }
+
 
   sanitizeUser(user: User) {
     const sanitized = user.toObject();

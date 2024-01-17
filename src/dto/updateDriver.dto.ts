@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class UpdateUserDto {
+export class UpdateDriverDto {
   @IsString()
   @IsNotEmpty()
   email: string;
@@ -25,5 +25,5 @@ export class UpdateUserDto {
 
   @IsString()
   @IsNotEmpty()
-  roles: string[];
+  roles: number;
 }

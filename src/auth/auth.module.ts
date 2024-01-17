@@ -7,16 +7,18 @@ import { MulterModule } from '@nestjs/platform-express';
 import { ConfigModule } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
+import { DashboardModule } from 'src/dashboard/dashboard.module';
 
 @Module({
   imports: [
     ConfigModule,
-    PassportModule,
+    PassportModule.register({ defaultStrategy: 'jwt', session: false }),
     JwtModule.register({
       secret: 'kimkim', // Replace with your actual secret key
-      signOptions: { expiresIn: '1h' }, // Set your desired expiration time
+      signOptions: { expiresIn: '24h' }, // Set your desired expiration time
     }),
     UserModule,
+    DashboardModule,
     MulterModule.register({
       dest: './uploads',
     }),

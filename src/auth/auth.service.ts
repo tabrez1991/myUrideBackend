@@ -15,6 +15,7 @@ export class AuthService {
     // return sign(payload, 'kimkim', { expiresIn: '24h' });
     return this.jwtService.sign(payload);
   }
+  
   async validateUser(payload: Payload) {
     const user = await this.userService.findByPayload(payload);
     if (user) {
