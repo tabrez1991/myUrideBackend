@@ -6,7 +6,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 // import { UserModule } from './user/user.module';
-// import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './auth/auth.module';
 // import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
@@ -26,7 +26,7 @@ import { ConfigModule } from '@nestjs/config';
     //   // Add other connection options as needed
     // }),
     // UserModule,
-    // AuthModule,
+    AuthModule,
     // DashboardModule,
   ],
   controllers: [AppController],
