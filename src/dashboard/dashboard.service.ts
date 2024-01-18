@@ -204,12 +204,12 @@ export class DashboardService {
       const users = await this.signupsModel
         .find({
           role_id: 1,
-          ...(searchQuery && {
-            $or: [
-              { username: { $regex: new RegExp(searchQuery, 'i') } },
-              { email: { $regex: new RegExp(searchQuery, 'i') } },
-            ],
-          }),
+          // ...(searchQuery && {
+          //   $or: [
+          //     { username: { $regex: new RegExp(searchQuery, 'i') } },
+          //     { email: { $regex: new RegExp(searchQuery, 'i') } },
+          //   ],
+          // }),
         })
         // .skip(skip)
         // .limit(limit)
@@ -256,6 +256,22 @@ export class DashboardService {
       //     totalPages: Math.ceil(totalDrivers / limit),
       //   },
       // };
+      if (searchQuery) {
+        const searchQueryLowerCase = searchQuery.toLowerCase();
+
+        const fullNameMatches = updatedUserProfiles.filter(user => {
+          const fullName = user?.backgroundCheck?.legal_first_name + ' ' + user?.backgroundCheck?.legal_middle_name + ' ' + user?.backgroundCheck?.legal_last_name; // Assuming fullName is a property in your profile model
+          return fullName && fullName.toLowerCase().includes(searchQueryLowerCase);
+        });
+
+        const mobileNumberMatches = updatedUserProfiles.filter(user => {
+          const mobileNumber = user?.mobile_no;
+          return mobileNumber && mobileNumber.toLowerCase().includes(searchQueryLowerCase);
+        });
+
+        return [...fullNameMatches, ...mobileNumberMatches];
+      }
+
       return updatedUserProfiles;
     } catch (error) {
       throw new Error(`Error counting users: ${error.message}`);
@@ -362,7 +378,6 @@ export class DashboardService {
     }
   }
 
-
   async getRidersList(page = 1, limit = 10, searchQuery?: string): Promise<any> {
     try {
       const skip = (page - 1) * limit;
@@ -372,43 +387,73 @@ export class DashboardService {
       // Build the base query
       const users = await this.signupsModel
         .find({
-          role_id: 2, ...(searchQuery && {
-            $or: [
-              { username: { $regex: new RegExp(searchQuery, 'i') } },
-              { email: { $regex: new RegExp(searchQuery, 'i') } },
-            ],
-          })
+          role_id: 2,
+          // ...(searchQuery && {
+          //   $or: [
+          //     { username: { $regex: new RegExp(searchQuery, 'i') } },
+          //     { email: { $regex: new RegExp(searchQuery, 'i') } },
+          //   ],
+          // })
         })
         // .skip(skip)
         // .limit(limit)
         .exec();
 
-      const userProfilesPromises = users.map((user) => {
-        return this.profileModel.findOne({ profile_id: user._id })
-          .then(profile => ({
-            user,
-            profile,
-          }));
-      });
+      // Fetch background checks, user profiles, and trips in parallel
+      const [backgroundChecks, userProfiles] = await Promise.all([
+        Promise.all(users.map(user => this.backgroundChecksModel.findOne({ driver_id: user._id }))),
+        Promise.all(users.map(user => this.profileModel.findOne({ profile_id: user._id }))),
+        // Promise.all(users.map(user => this.userTripsModel.find({ user_id: user._id}))),
+      ]);
 
-      const userProfilesWithProfile = await Promise.all(userProfilesPromises);
-
-      const tripsDetailsPromises = userProfilesWithProfile.map(({ profile }) => {
-        return this.userTripsModel.find({ user_id: profile.profile_id })
-          .then(trips => ({
-            profile,
-            trips,
-          }));
+      const tripsDetailsPromises = userProfiles.map(({ profile_id }) => {
+        return this.userTripsModel.find({ user_id: profile_id })
+          .then(trips => trips);
       });
 
       const tripsProfiles = await Promise.all(tripsDetailsPromises);
 
-      const updatedUserProfiles = tripsProfiles.map(({ profile, trips }) => {
+      const updatedUserProfiles = users.map((user, index) => {
+        const backgroundCheck = backgroundChecks[index];
+        const profile = userProfiles[index];
+        const trips = tripsProfiles[index];
+
+
+
         return {
           ...profile.toObject(),
+          user,
+          backgroundCheck,
           totalTrips: trips.length,
         };
       });
+
+      // const userProfilesPromises = users.map((user) => {
+      //   return this.profileModel.findOne({ profile_id: user._id })
+      //     .then(profile => ({
+      //       user,
+      //       profile,
+      //     }));
+      // });
+
+      // const userProfilesWithProfile = await Promise.all(userProfilesPromises);
+
+      // const tripsDetailsPromises = userProfilesWithProfile.map(({ profile }) => {
+      //   return this.userTripsModel.find({ user_id: profile.profile_id })
+      //     .then(trips => ({
+      //       profile,
+      //       trips,
+      //     }));
+      // });
+
+      // const tripsProfiles = await Promise.all(tripsDetailsPromises);
+
+      // const updatedUserProfiles = tripsProfiles.map(({ profile, trips }) => {
+      //   return {
+      //     ...profile.toObject(),
+      //     totalTrips: trips.length,
+      //   };
+      // });
 
       // return {
       //   data: updatedUserProfiles,
@@ -419,9 +464,127 @@ export class DashboardService {
       //     totalPages: Math.ceil(totalDrivers / limit),
       //   },
       // };
+
+      if (searchQuery) {
+        const searchQueryLowerCase = searchQuery.toLowerCase();
+
+        const fullNameMatches = updatedUserProfiles.filter(user => {
+          // const fullName = user?.backgroundCheck?.legal_first_name + ' ' + user?.backgroundCheck?.legal_middle_name + ' ' + user?.backgroundCheck?.legal_last_name; // Assuming fullName is a property in your profile model
+          const fullName = user?.fullname;
+          return fullName && fullName.toLowerCase().includes(searchQueryLowerCase);
+        });
+
+        const mobileNumberMatches = updatedUserProfiles.filter(user => {
+          const mobileNumber = user?.mobile_no;
+          return mobileNumber && mobileNumber.toLowerCase().includes(searchQueryLowerCase);
+        });
+
+        return [...fullNameMatches, ...mobileNumberMatches];
+      }
+      
       return updatedUserProfiles;
     } catch (error) {
       throw new Error(`Error counting users: ${error.message}`);
+    }
+  }
+
+  async updateRider(UpdateDriverDto: UpdateDriverDto): Promise<any> {
+    const { email, name, middleName, lastName, mobile, password, profile_picture, roles } =
+      UpdateDriverDto;
+    let user = await this.signupsModel.findOne({ email });
+    if (!user) {
+      throw new HttpException("driver doesn't exists", HttpStatus.BAD_REQUEST);
+    }
+
+    const profile = await this.profileModel.findOne({ profile_id: user._id })
+
+    const hashed = password ? await bcrypt.hash(password, 10) : user.password;
+
+    const profilePicture = profile_picture ? profile_picture : profile.profile_photo;
+
+    const updateSignUpDetails = await this.signupsModel.updateOne(
+      { email: user.email },
+      {
+        email: email,
+        password: hashed,
+        role_id: Number(roles),
+      },
+    );
+
+    const updateProfileDetails = await this.profileModel.updateOne(
+      { profile_id: user._id },
+      {
+        fullname: name + " " + (middleName ? middleName + " " : "" + lastName ? lastName : ""),
+        mobile_no: mobile,
+        profile_photo: profilePicture,
+        type: roles,
+      },
+    );
+
+    const updateBackgroundDetails = await this.backgroundChecksModel.updateOne(
+      { driver_id: user._id },
+      {
+        legal_first_name: name,
+        legal_middle_name: middleName,
+        legal_last_name: lastName,
+      },
+    );
+    if (updateSignUpDetails && updateProfileDetails && updateBackgroundDetails) {
+      return {
+        msg: "Successfully updated",
+        statusCode: HttpStatus.OK
+      };
+    } else {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async deleteRider(DeleteDriverDTO: DeleteDriverDTO): Promise<any> {
+    const { email } = DeleteDriverDTO;
+    let user = await this.signupsModel.findOne({ email });
+    if (!user) {
+      throw new HttpException('Driver doesnt exists', HttpStatus.BAD_REQUEST);
+    }
+    const updateSignUpDetails = await this.signupsModel.updateOne(
+      { email: user.email },
+      {
+        status: 0,
+      },
+    );
+    if (updateSignUpDetails) {
+      return {
+        msg: "Successfully Deactivated",
+        statusCode: HttpStatus.OK,
+      };
+    } else {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async activateRider(DeleteDriverDTO: DeleteDriverDTO): Promise<any> {
+    try {
+      const { email } = DeleteDriverDTO;
+      let user = await this.signupsModel.findOne({ email });
+      if (!user) {
+        throw new HttpException('Driver doesnt exists', HttpStatus.BAD_REQUEST);
+      }
+
+      const updateSignUpDetails = await this.signupsModel.updateOne(
+        { email: user.email },
+        {
+          status: 1,
+        },
+      );
+      if (updateSignUpDetails) {
+        return {
+          msg: "Successfully Activated",
+          statusCode: HttpStatus.OK
+        };
+      } else {
+        throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    } catch (error) {
+      throw new HttpException(error.response, HttpStatus.BAD_REQUEST);
     }
   }
 

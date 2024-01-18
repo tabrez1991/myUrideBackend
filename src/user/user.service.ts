@@ -129,8 +129,10 @@ export class UserService {
     if (searchQuery) {
       query.or([
         { name: { $regex: new RegExp(searchQuery, 'i') } },
+        { middleName: { $regex: new RegExp(searchQuery, 'i') } },
+        { lastName: { $regex: new RegExp(searchQuery, 'i') } },
         { email: { $regex: new RegExp(searchQuery, 'i') } },
-        { mobileNumber: { $regex: new RegExp(searchQuery, 'i') } },
+        { mobile: { $regex: new RegExp(searchQuery, 'i') } },
       ]);
     }
 

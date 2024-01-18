@@ -92,6 +92,26 @@ export class AuthController {
     return this.dashboardService.getRidersList(page, limit, searchQuery);
   }
 
+  @Post('/edit-rider')
+  @UseInterceptors(FileInterceptor('profile_picture'))
+  async createRider(
+    @UploadedFile() file: any,
+    @Body() UpdateDriverDto: UpdateDriverDto,
+  ) {
+    UpdateDriverDto.profile_picture = file ? file.filename : null;
+    return this.dashboardService.updateRider(UpdateDriverDto);
+  }
+
+  @Post('/delete-rider')
+  async deleteRider(@Body() DeleteDriverDTO: DeleteDriverDTO) {
+    return await this.dashboardService.deleteRider(DeleteDriverDTO);
+  }
+
+  @Post('/activate-rider')
+  async activateRider(@Body() DeleteDriverDTO: DeleteDriverDTO) {
+    return await this.dashboardService.activateRider(DeleteDriverDTO);
+  }
+
   @Get('/states-list')
   async statesDetails(): Promise<any[]> {
     return this.dashboardService.getStateList();
