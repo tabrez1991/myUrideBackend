@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-// import { UserModule } from 'src/user/user.module';
+import { UserModule } from 'src/user/user.module';
 import { JwtStrategy } from './jwt.strategy';
 import { MulterModule } from '@nestjs/platform-express';
 import { ConfigModule } from '@nestjs/config';
@@ -17,7 +17,7 @@ import { DashboardModule } from 'src/dashboard/dashboard.module';
       secret: 'kimkim', // Replace with your actual secret key
       signOptions: { expiresIn: '24h' }, // Set your desired expiration time
     }),
-    // UserModule,
+    UserModule,
     DashboardModule,
     MulterModule.register({
       dest: './uploads',

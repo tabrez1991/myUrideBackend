@@ -9,7 +9,6 @@ import { BackgroundChecks } from 'src/models/backgroundchecks.schema';
 import { UpdateDriverDto } from 'src/dto/updateDriver.dto';
 import * as bcrypt from 'bcrypt';
 import { DeleteDriverDTO } from 'src/dto/deleteDriver.dto';
-import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class DashboardService {

@@ -147,7 +147,6 @@ export class UserService {
     });
   }
 
-
   async updateUser(UpdateUserDto: UpdateUserDto): Promise<User> {
     const { email, name, middleName, lastName, mobile, password, profile_picture, roles } =
       UpdateUserDto;
@@ -243,7 +242,6 @@ export class UserService {
     }
     return this.sanitizeUser(user);
   }
-
 
   sanitizeUser(user: User) {
     const sanitized = user.toObject();
