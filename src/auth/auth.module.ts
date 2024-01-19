@@ -7,7 +7,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { ConfigModule } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-// import { DashboardModule } from 'src/dashboard/dashboard.module';
+import { DashboardModule } from 'src/dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -18,7 +18,7 @@ import { JwtModule } from '@nestjs/jwt';
       signOptions: { expiresIn: '24h' }, // Set your desired expiration time
     }),
     // UserModule,
-    // DashboardModule,
+    DashboardModule,
     MulterModule.register({
       dest: './uploads',
     }),

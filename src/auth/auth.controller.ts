@@ -24,7 +24,7 @@ import { AuthService } from './auth.service';
 // import { UserRole } from 'src/enums/roles.enum';
 // import { RoleGuard } from './role.guard';
 // import { LogoutUserDTO } from 'src/dto/logoutUser.dto';
-// import { DashboardService } from 'src/dashboard/dashboard.service';
+import { DashboardService } from 'src/dashboard/dashboard.service';
 // import { UpdateDriverDto } from 'src/dto/updateDriver.dto';
 // import { DeleteDriverDTO } from 'src/dto/deleteDriver.dto';
 
@@ -33,14 +33,14 @@ export class AuthController {
   constructor(
     // private userService: UserService,
     private authService: AuthService,
-    // private dashboardService: DashboardService
+    private dashboardService: DashboardService
   ) { }
 
-  // @Get('/total')
-  // async totalData(): Promise<any> {
-  //   const total = await this.dashboardService.getTotalData();
-  //   return total;
-  // }
+  @Get('/total')
+  async totalData(): Promise<any> {
+    const total = await this.dashboardService.getTotalData();
+    return total;
+  }
 
   // @Get('/month-wise')
   // async monthWise(): Promise<any> {
