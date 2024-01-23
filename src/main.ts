@@ -11,7 +11,7 @@ async function bootstrap() {
   app.use('/uploads', express.static('uploads'));
   const allowedOrigins = ['https://my-uride-backend.vercel.app','https://tabrez1991.github.io','http://localhost:3000', 'http://localhost:3001'];
   app.enableCors({
-    origin: allowedOrigins,
+    origin: 'https://tabrez1991.github.io',
     methods: 'GET, PUT, POST, DELETE, OPTIONS',
     credentials: true,
     preflightContinue: false,
