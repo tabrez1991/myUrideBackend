@@ -11,7 +11,7 @@ async function bootstrap() {
   app.use('/uploads', express.static('uploads'));
   const allowedOrigins = ['https://tabrez1991.github.io','http://localhost:3000', 'http://localhost:3001'];
   app.enableCors({
-    origin: '*',
+    origin: allowedOrigins,
     methods: 'GET, PUT, POST, DELETE, OPTIONS',
     credentials: true,
     preflightContinue: false,
