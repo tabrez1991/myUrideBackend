@@ -8,16 +8,16 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { RegisterDTO } from '../dto/register.dto';
 import * as bcrypt from 'bcrypt';
-import { Payload } from 'src/types/payload';
-import { LoginDTO } from 'src/dto/login.dto';
-import { TokenUpdateDTO } from 'src/dto/tokenUpdate.dto';
-import { ResetPasswordtDTO } from 'src/dto/resetPassword.dto';
-import { UserDto } from 'src/dto/user.dto';
-import { UpdateUserDto } from 'src/dto/updateUser.dto';
-import { User } from 'src/models/user.schema';
-import { DeleteUserDTO } from 'src/dto/deleteUser.dto';
-import { UserStatus } from 'src/enums/userStatus.enum';
-import { LogoutUserDTO } from 'src/dto/logoutUser.dto';
+import { Payload } from '../types/payload';
+import { LoginDTO } from '../dto/login.dto';
+import { TokenUpdateDTO } from '../dto/tokenUpdate.dto';
+import { ResetPasswordtDTO } from '../dto/resetPassword.dto';
+import { UserDto } from '../dto/user.dto';
+import { UpdateUserDto } from '../dto/updateUser.dto';
+import { User } from '../models/user.schema';
+import { DeleteUserDTO } from '../dto/deleteUser.dto';
+import { UserStatus } from '../enums/userStatus.enum';
+import { LogoutUserDTO } from '../dto/logoutUser.dto';
 
 @Injectable()
 export class UserService {
