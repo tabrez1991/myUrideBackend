@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { DashboardService } from './dashboard.service';
-import { SignUpsSchema } from 'src/models/signups.schema';
+import { SignUpsSchema } from '../models/signups.schema';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UserTripsSchema } from 'src/models/usertrips.schema';
-import { ProfileSchema } from 'src/models/profile.schema';
-import { BackgroundChecksSchema } from 'src/models/backgroundchecks.schema';
-import { FeedbackSchema } from 'src/models/feedback.schema';
+import { UserTripsSchema } from '../models/usertrips.schema';
+import { ProfileSchema } from '../models/profile.schema';
+import { BackgroundChecksSchema } from '../models/backgroundchecks.schema';
+import { FeedbackSchema } from '../models/feedback.schema';
 
 @Module({
   imports: [

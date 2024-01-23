@@ -3,13 +3,13 @@ import { InjectModel } from '@nestjs/mongoose';
 import { SignUps } from '../models/signups.schema';
 import { Model } from 'mongoose';
 import { UserTrips } from '../models/usertrips.schema';
-import { Profile } from 'src/models/profile.schema';
-import { statesList } from 'src/enums/states';
-import { BackgroundChecks } from 'src/models/backgroundchecks.schema';
-import { UpdateDriverDto } from 'src/dto/updateDriver.dto';
+import { Profile } from '../models/profile.schema';
+import { statesList } from '../enums/states';
+import { BackgroundChecks } from '../models/backgroundchecks.schema';
+import { UpdateDriverDto } from '../dto/updateDriver.dto';
 import * as bcrypt from 'bcrypt';
-import { DeleteDriverDTO } from 'src/dto/deleteDriver.dto';
-import { Feedback } from 'src/models/feedback.schema';
+import { DeleteDriverDTO } from '../dto/deleteDriver.dto';
+import { Feedback } from '../models/feedback.schema';
 
 @Injectable()
 export class DashboardService {

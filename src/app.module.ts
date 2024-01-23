@@ -13,7 +13,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: [`src/config/.env.${process.env.STAGE}`],
+      envFilePath: [`../config/.env.${process.env.STAGE}`],
       expandVariables: true,
     }),
     MongooseModule.forRoot(
