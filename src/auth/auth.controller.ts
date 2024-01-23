@@ -127,6 +127,16 @@ export class AuthController {
     return this.dashboardService.getTripsList(page, limit, state, searchQuery);
   }
 
+  @Get('/feedback-list')
+  async feedbackDetails(
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+    @Query('searchQuery') searchQuery: string,
+  ): Promise<any[]> {
+    return this.dashboardService.getFeedbackList(page, limit, searchQuery);
+  }
+
+
   @Post('register')
   async register(@Body() registerDTO: RegisterDTO) {
     const user = await this.userService.create(registerDTO);

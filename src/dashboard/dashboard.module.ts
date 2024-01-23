@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UserTripsSchema } from 'src/models/usertrips.schema';
 import { ProfileSchema } from 'src/models/profile.schema';
 import { BackgroundChecksSchema } from 'src/models/backgroundchecks.schema';
+import { FeedbackSchema } from 'src/models/feedback.schema';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { BackgroundChecksSchema } from 'src/models/backgroundchecks.schema';
       { name: 'UserTrips', schema: UserTripsSchema },
       { name: 'Profile', schema: ProfileSchema },
       { name: 'BackgroundChecks', schema: BackgroundChecksSchema },
+      { name: 'Feedback', schema: FeedbackSchema },
     ]),
   ],
   controllers: [],

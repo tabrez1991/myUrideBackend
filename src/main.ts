@@ -9,7 +9,7 @@ async function bootstrap() {
   const port = process.env.PORT ? Number(process.env.PORT) : 8001;
   const logger = new Logger();
   app.use('/uploads', express.static('uploads'));
-  const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001'];
+  const allowedOrigins = ['https://tabrez1991.github.io','http://localhost:3000', 'http://localhost:3001'];
   app.enableCors({
     origin: allowedOrigins,
     methods: 'GET, PUT, POST, DELETE, OPTIONS',

@@ -9,6 +9,7 @@ import { BackgroundChecks } from 'src/models/backgroundchecks.schema';
 import { UpdateDriverDto } from 'src/dto/updateDriver.dto';
 import * as bcrypt from 'bcrypt';
 import { DeleteDriverDTO } from 'src/dto/deleteDriver.dto';
+import { Feedback } from 'src/models/feedback.schema';
 
 @Injectable()
 export class DashboardService {
@@ -16,7 +17,8 @@ export class DashboardService {
     @InjectModel(SignUps.name) private signupsModel: Model<SignUps>,
     @InjectModel(UserTrips.name) private userTripsModel: Model<UserTrips>,
     @InjectModel(Profile.name) private profileModel: Model<Profile>,
-    @InjectModel(BackgroundChecks.name) private backgroundChecksModel: Model<BackgroundChecks>) { }
+    @InjectModel(BackgroundChecks.name) private backgroundChecksModel: Model<BackgroundChecks>,
+    @InjectModel(Feedback.name) private feedbackModel: Model<Feedback>) { }
 
   async getSignups(page = 1, limit = 10, searchQuery?: string): Promise<any[]> {
     const skip = (page - 1) * limit;
@@ -117,80 +119,6 @@ export class DashboardService {
       throw new Error(`Error counting users: ${error.message}`);
     }
   }
-
-  // async getDriversList(page = 1, limit = 10, searchQuery?: string): Promise<any> {
-  //   try {
-  //     const skip = (page - 1) * limit;
-
-  //     const totalDrivers = await this.signupsModel.countDocuments({ role_id: 2 });
-
-  //     // Build the base query
-  //     const users = await this.signupsModel
-  //       .find({
-  //         role_id: 1, ...(searchQuery && {
-  //           $or: [
-  //             { username: { $regex: new RegExp(searchQuery, 'i') } },
-  //             { email: { $regex: new RegExp(searchQuery, 'i') } },
-  //           ],
-  //         })
-  //       })
-  //       // .skip(skip)
-  //       // .limit(limit)
-  //       .exec();
-
-  //     const backgroundChecksPromises = users.map((user) => {
-  //       return this.backgroundChecksModel.findOne({ driver_id: user._id })
-  //         .then(backgroundCheck => ({
-  //           user,
-  //           backgroundCheck,
-  //         }));
-  //     });
-
-  //     const userProfilesWithBackground = await Promise.all(backgroundChecksPromises);
-
-  //     const userProfilesPromises = users.map((user) => {
-  //       return this.profileModel.findOne({ profile_id: user._id })
-  //         .then(profile => ({
-  //           user,
-  //           profile,
-  //         }));
-  //     });
-
-  //     const userProfilesWithProfile = await Promise.all(userProfilesPromises);
-
-
-  //     const tripsDetailsPromises = userProfilesWithProfile.map(({ profile }) => {
-  //       return this.userTripsModel.find({ user_id: profile.profile_id })
-  //         .then(trips => ({
-  //           profile,
-  //           trips,
-  //         }));
-  //     });
-
-  //     const tripsProfiles = await Promise.all(tripsDetailsPromises);
-
-  //     const updatedUserProfiles = tripsProfiles.map(({ profile, trips }) => {
-  //       return {
-  //         ...profile.toObject(),
-  //         totalTrips: trips.length,
-  //         totalTripAmount: trips.reduce((total, trip) => total + trip.amount, 0),
-  //       };
-  //     });
-
-  //     // return {
-  //     //   data: updatedUserProfiles,
-  //     //   metadata: {
-  //     //     page,
-  //     //     pageSize: limit,
-  //     //     total: totalDrivers,
-  //     //     totalPages: Math.ceil(totalDrivers / limit),
-  //     //   },
-  //     // };
-  //     return updatedUserProfiles;
-  //   } catch (error) {
-  //     throw new Error(`Error counting users: ${error.message}`);
-  //   }
-  // }
 
   async getDriversList(page = 1, limit = 10, searchQuery?: string): Promise<any> {
     try {
@@ -480,7 +408,7 @@ export class DashboardService {
 
         return [...fullNameMatches, ...mobileNumberMatches];
       }
-      
+
       return updatedUserProfiles;
     } catch (error) {
       throw new Error(`Error counting users: ${error.message}`);
@@ -599,26 +527,37 @@ export class DashboardService {
     try {
       const skip = (page - 1) * limit;
 
-      const totaltrips = await this.userTripsModel.countDocuments();
+      const countQuery: any = {};
 
-      // Build the base query
-      const trips = await this.userTripsModel
-        .find({
-          ...(searchQuery && {
+      if (searchQuery || state) {
+        countQuery.$and = [];
+
+        if (searchQuery) {
+          countQuery.$and.push({
             $or: [
               { pickup_location: { $regex: new RegExp(searchQuery, 'i') } },
               { destination_location: { $regex: new RegExp(searchQuery, 'i') } },
-              { status: { $regex: new RegExp(searchQuery, 'i') } },
-              { _id: { $regex: new RegExp(searchQuery, 'i') } },
+              // { status: { $regex: new RegExp(searchQuery, 'i') } },
+              // { _id: { $regex: new RegExp(searchQuery, 'i') } },
             ],
-          }),
-          ...(state && {
+          });
+        }
+
+        if (state) {
+          countQuery.$and.push({
             $or: [
               { pickup_location: { $regex: new RegExp(state, 'i') } },
-              { destination_location: { $regex: new RegExp(state, 'i') } }
-            ]
-          })
-        })
+              { destination_location: { $regex: new RegExp(state, 'i') } },
+            ],
+          });
+        }
+      }
+
+      const totaltrips = await this.userTripsModel.countDocuments(countQuery);
+
+      // Build the base query
+      const trips = await this.userTripsModel
+        .find(countQuery)
         .sort({ updated_date: -1 })
         .skip(skip)
         .limit(limit)
@@ -635,6 +574,45 @@ export class DashboardService {
       };
     } catch (error) {
       throw new Error(`Error counting users: ${error.message}`);
+    }
+  }
+
+  async getFeedbackList(page = 1, limit = 10, searchQuery?: string): Promise<any> {
+    try {
+      const skip = (page - 1) * limit;
+
+      const countQuery: any = {
+        ...(searchQuery && {
+          $or: [
+            { fullname: { $regex: new RegExp(searchQuery, 'i') } },
+            { mobile: { $regex: new RegExp(searchQuery, 'i') } },
+            { description: { $regex: new RegExp(searchQuery, 'i') } },
+            { email: { $regex: new RegExp(searchQuery, 'i') } },
+          ],
+        })
+      };
+
+      const totalFeedback = await this.feedbackModel.countDocuments(countQuery);
+
+      // Build the base query
+      const feedback = await this.feedbackModel
+        .find(countQuery)
+        .sort({ created_date: -1 })
+        .skip(skip)
+        .limit(limit)
+        .exec();
+
+      return {
+        data: feedback,
+        metadata: {
+          page,
+          pageSize: limit,
+          total: totalFeedback,
+          totalPages: Math.ceil(totalFeedback / limit),
+        },
+      };
+    } catch (error) {
+      throw new Error(`Error counting feedback: ${error.message}`);
     }
   }
 }
