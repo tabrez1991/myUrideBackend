@@ -4,7 +4,6 @@ import { ExtractJwt, VerifiedCallback } from 'passport-jwt';
 import { Strategy } from 'passport-jwt';
 import { AuthService } from './auth.service';
 import { Reflector } from '@nestjs/core';
-import { UserRole } from 'src/enums/roles.enum';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {

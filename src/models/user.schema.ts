@@ -1,5 +1,5 @@
 import * as bcrypt from 'bcrypt';
-import { UserRole } from 'src/enums/roles.enum';
+import { UserRole } from '../enums/roles.enum';
 import { UserStatus } from 'src/enums/userStatus.enum';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';

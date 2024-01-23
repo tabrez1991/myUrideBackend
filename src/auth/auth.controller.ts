@@ -10,23 +10,23 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport/dist/auth.guard';
-import { RegisterDTO } from 'src/dto/register.dto';
-import { UserService } from 'src/user/user.service';
+import { RegisterDTO } from '../dto/register.dto';
+import { UserService } from '../user/user.service';
 import { AuthService } from './auth.service';
 import { LoginDTO } from '../dto/login.dto';
-import { ResetPasswordtDTO } from 'src/dto/resetPassword.dto';
-import { UserDto } from 'src/dto/user.dto';
+import { ResetPasswordtDTO } from '../dto/resetPassword.dto';
+import { UserDto } from '../dto/user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { UpdateUserDto } from 'src/dto/updateUser.dto';
-import { User } from 'src/models/user.schema';
-import { DeleteUserDTO } from 'src/dto/deleteUser.dto';
-import { Roles } from 'src/decorator/roles.decorator';
-import { UserRole } from 'src/enums/roles.enum';
+import { UpdateUserDto } from '../dto/updateUser.dto';
+import { User } from '../models/user.schema';
+import { DeleteUserDTO } from '../dto/deleteUser.dto';
+import { Roles } from '../decorator/roles.decorator';
+import { UserRole } from '../enums/roles.enum';
 import { RoleGuard } from './role.guard';
-import { LogoutUserDTO } from 'src/dto/logoutUser.dto';
-import { DashboardService } from 'src/dashboard/dashboard.service';
-import { UpdateDriverDto } from 'src/dto/updateDriver.dto';
-import { DeleteDriverDTO } from 'src/dto/deleteDriver.dto';
+import { LogoutUserDTO } from '../dto/logoutUser.dto';
+import { DashboardService } from '../dashboard/dashboard.service';
+import { UpdateDriverDto } from '../dto/updateDriver.dto';
+import { DeleteDriverDTO } from '../dto/deleteDriver.dto';
 
 @Controller('auth')
 export class AuthController {
