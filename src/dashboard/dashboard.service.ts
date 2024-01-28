@@ -10,6 +10,8 @@ import { UpdateDriverDto } from '../dto/updateDriver.dto';
 import * as bcrypt from 'bcrypt';
 import { DeleteDriverDTO } from '../dto/deleteDriver.dto';
 import { Feedback } from '../models/feedback.schema';
+import { DeactiveTripDTO } from 'src/dto/deactivateTrip.dto';
+import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class DashboardService {
@@ -576,6 +578,58 @@ export class DashboardService {
       throw new Error(`Error counting users: ${error.message}`);
     }
   }
+
+
+  async deactiveTrip(DeactiveTripDTO: DeactiveTripDTO): Promise<any> {
+    const { tripId } = DeactiveTripDTO;
+    console.log(tripId)
+    let trip = await this.userTripsModel.findOne({ _id: tripId });
+    if (!trip) {
+      throw new HttpException('Trip doesnt exists', HttpStatus.BAD_REQUEST);
+    }
+    const updateTripDetails = await this.userTripsModel.updateOne(
+      { _id: trip._id },
+      {
+        status: 4,
+      },
+    );
+    if (updateTripDetails) {
+      return {
+        msg: "Successfully Deactivated",
+        statusCode: HttpStatus.OK,
+      };
+    } else {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async activateTrip(DeactiveTripDTO: DeactiveTripDTO): Promise<any> {
+    try {
+      const { tripId } = DeactiveTripDTO;
+      let trip = await this.userTripsModel.findOne({  _id: tripId });
+      if (!trip) {
+        throw new HttpException('Trip doesnt exists', HttpStatus.BAD_REQUEST);
+      }
+
+      const updateTripDetails = await this.userTripsModel.updateOne(
+        { _id: trip._id },
+        {
+          status: 5,
+        },
+      );
+      if (updateTripDetails) {
+        return {
+          msg: "Successfully Activated",
+          statusCode: HttpStatus.OK
+        };
+      } else {
+        throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    } catch (error) {
+      throw new HttpException(error.response, HttpStatus.BAD_REQUEST);
+    }
+  }
+
 
   async getFeedbackList(page = 1, limit = 10, searchQuery?: string): Promise<any> {
     try {

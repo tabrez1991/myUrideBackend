@@ -1,8 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { ObjectId } from 'mongodb';
 import { Document } from 'mongoose';
 
 @Schema()
 export class UserTrips extends Document {
+  @Prop({ type: ObjectId})
+  _id: string;
+  
   @Prop({ type: String, })
   userid: string;
 

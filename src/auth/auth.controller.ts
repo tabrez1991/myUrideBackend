@@ -27,6 +27,7 @@ import { LogoutUserDTO } from '../dto/logoutUser.dto';
 import { DashboardService } from '../dashboard/dashboard.service';
 import { UpdateDriverDto } from '../dto/updateDriver.dto';
 import { DeleteDriverDTO } from '../dto/deleteDriver.dto';
+import { DeactiveTripDTO } from 'src/dto/deactivateTrip.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -125,6 +126,16 @@ export class AuthController {
     @Query('searchQuery') searchQuery: string,
   ): Promise<any[]> {
     return this.dashboardService.getTripsList(page, limit, state, searchQuery);
+  }
+
+  @Post('/deactivate-trip')
+  async deactivateTrip(@Body() DeactiveTripDTO: DeactiveTripDTO) {
+    return await this.dashboardService.deactiveTrip(DeactiveTripDTO);
+  }
+
+  @Post('/activate-trip')
+  async activateTrip(@Body() DeactiveTripDTO: DeactiveTripDTO) {
+    return await this.dashboardService.activateTrip(DeactiveTripDTO);
   }
 
   @Get('/feedback-list')
