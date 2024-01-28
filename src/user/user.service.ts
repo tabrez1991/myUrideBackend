@@ -18,6 +18,7 @@ import { User } from '../models/user.schema';
 import { DeleteUserDTO } from '../dto/deleteUser.dto';
 import { UserStatus } from '../enums/userStatus.enum';
 import { LogoutUserDTO } from '../dto/logoutUser.dto';
+import { AddUserDto } from 'src/dto/addUser.dto';
 
 @Injectable()
 export class UserService {
@@ -145,6 +146,38 @@ export class UserService {
       tempUser['profile_picture'] = `/uploads/${user.profile_picture}`;
       return tempUser;
     });
+  }
+
+  async addUser(AddUserDto: AddUserDto): Promise<User> {
+    const { email, name, middleName, lastName, mobile, password, profile_picture, roles } =
+      AddUserDto;
+    try {
+      let user = await this.userModel.findOne({ email });
+      if (user) {
+        throw new HttpException('user already exists', HttpStatus.BAD_REQUEST);
+      }
+
+      const hashed = password ? await bcrypt.hash(password, 10) : user.password;
+
+      const profilePicture = profile_picture ? profile_picture : user.profile_picture;
+
+      const addUserDetails = new this.userModel(
+        {
+          name: name,
+          middleName: middleName,
+          lastName: lastName,
+          mobile: mobile,
+          profile_picture: profilePicture,
+          roles: roles,
+          password: hashed,
+        },
+      );
+      await addUserDetails.save();
+      return this.sanitizeUser(addUserDetails);
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(error.response, HttpStatus.BAD_REQUEST);
+    }
   }
 
   async updateUser(UpdateUserDto: UpdateUserDto): Promise<User> {

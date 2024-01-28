@@ -28,6 +28,7 @@ import { DashboardService } from '../dashboard/dashboard.service';
 import { UpdateDriverDto } from '../dto/updateDriver.dto';
 import { DeleteDriverDTO } from '../dto/deleteDriver.dto';
 import { DeactiveTripDTO } from 'src/dto/deactivateTrip.dto';
+import { AddUserDto } from 'src/dto/addUser.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -202,6 +203,18 @@ export class AuthController {
     @Query('searchQuery') searchQuery: string,
   ): Promise<UserDto[]> {
     return this.userService.getUsers(page, limit, searchQuery);
+  }
+
+  @Post('/add-user')
+  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.USER)
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
+  @UseInterceptors(FileInterceptor('profile_picture'))
+  async addUser(
+    @UploadedFile() file: any,
+    @Body() AddUserDto: AddUserDto,
+  ) {
+    AddUserDto.profile_picture = file ? file.filename : null;
+    return this.userService.addUser(AddUserDto);
   }
 
   @Post('/edit-user')
