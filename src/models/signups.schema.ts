@@ -12,22 +12,22 @@ export class SignUps extends Document {
   @Prop({ type: String, required: true })
   password: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, })
   device_id: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, })
   device_token: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, })
   device_type: string;
 
-  @Prop({ type: Number, required: true })
+  @Prop({ type: Number, })
   email_verified: number;
 
   @Prop({ type: String, default: null })
   jwttoken: string;
 
-  @Prop({ type: Number, required: true })
+  @Prop({ type: Number, })
   otp: number;
 
   @Prop({ type: String, default: null })

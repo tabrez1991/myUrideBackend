@@ -29,6 +29,7 @@ import { UpdateDriverDto } from '../dto/updateDriver.dto';
 import { DeleteDriverDTO } from '../dto/deleteDriver.dto';
 import { DeactiveTripDTO } from 'src/dto/deactivateTrip.dto';
 import { AddUserDto } from 'src/dto/addUser.dto';
+import { AddDriverDto } from 'src/dto/addDriver.dto.';
 
 @Controller('auth')
 export class AuthController {
@@ -65,6 +66,23 @@ export class AuthController {
     return this.dashboardService.getDriversList(page, limit, searchQuery);
   }
 
+  @Post('/add-driver')
+  @UseInterceptors(
+    FileInterceptor('profile_picture'),
+    FileInterceptor('upload_vehicle_registration'),
+    FileInterceptor('upload_driver_licence'),
+    FileInterceptor('upload_inssurance_card'))
+  async addDriver(
+    @UploadedFile() file: any,
+    @Body() AddDriverDto: AddDriverDto,
+  ) {
+    AddDriverDto.profile_picture = file ? file.filename : null;
+    AddDriverDto.upload_vehicle_registration = file ? file.filename : null;
+    AddDriverDto.upload_driver_licence = file ? file.filename : null;
+    AddDriverDto.upload_inssurance_card = file ? file.filename : null;
+    return this.dashboardService.addDriver(AddDriverDto);
+  }
+
   @Post('/edit-driver')
   @UseInterceptors(FileInterceptor('profile_picture'))
   async createDriver(
@@ -92,6 +110,23 @@ export class AuthController {
     @Query('searchQuery') searchQuery: string,
   ): Promise<any[]> {
     return this.dashboardService.getRidersList(page, limit, searchQuery);
+  }
+
+  @Post('/add-rider')
+  @UseInterceptors(
+    FileInterceptor('profile_picture'),
+    FileInterceptor('upload_vehicle_registration'),
+    FileInterceptor('upload_driver_licence'),
+    FileInterceptor('upload_inssurance_card'))
+  async addRider(
+    @UploadedFile() file: any,
+    @Body() AddDriverDto: AddDriverDto,
+  ) {
+    AddDriverDto.profile_picture = file ? file.filename : null;
+    AddDriverDto.upload_vehicle_registration = file ? file.filename : null;
+    AddDriverDto.upload_driver_licence = file ? file.filename : null;
+    AddDriverDto.upload_inssurance_card = file ? file.filename : null;
+    return this.dashboardService.addRider(AddDriverDto);
   }
 
   @Post('/edit-rider')

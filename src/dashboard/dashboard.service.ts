@@ -12,6 +12,7 @@ import { DeleteDriverDTO } from '../dto/deleteDriver.dto';
 import { Feedback } from '../models/feedback.schema';
 import { DeactiveTripDTO } from 'src/dto/deactivateTrip.dto';
 import { ObjectId } from 'mongodb';
+import { AddDriverDto } from 'src/dto/addDriver.dto.';
 
 @Injectable()
 export class DashboardService {
@@ -142,6 +143,7 @@ export class DashboardService {
         })
         // .skip(skip)
         // .limit(limit)
+        .sort({ created_date: -1 })
         .exec();
 
       // Fetch background checks, user profiles, and trips in parallel
@@ -204,6 +206,81 @@ export class DashboardService {
       return updatedUserProfiles;
     } catch (error) {
       throw new Error(`Error counting users: ${error.message}`);
+    }
+  }
+
+  async addDriver(AddDriverDto: AddDriverDto): Promise<any> {
+    const { type, profile_picture, university_name, student_id, university_address, mobile, email, password, gender, destination_contact_number, gender_preferences, rider_preference, phone_code, phone_no, legal_first_name, legal_middle_name, legal_last_name, license_number, license_state, zip_code, dob, ssn, make, model, year, upload_vehicle_registration, upload_driver_licence, upload_inssurance_card, car_model, vehicle_license_plate_number } =
+      AddDriverDto;
+    let user = await this.signupsModel.findOne({ email });
+    if (user) {
+      throw new HttpException("driver already exists", HttpStatus.BAD_REQUEST);
+    }
+
+    const hashed = password ? await bcrypt.hash(password, 10) : user.password;
+
+    const profilePicture = profile_picture ? profile_picture : "";
+
+    const addSignupDetails = new this.signupsModel({
+      email: email,
+      username: email,
+      password: hashed,
+      device_id: "",
+      device_token: "",
+      device_type: "",
+      email_verified: 0,
+      jwttoken: "",
+      otp: "",
+      refreshToken: "",
+      role_id: 1,
+      status: 1
+    })
+
+    const addProfileDetails = new this.profileModel({
+      profile_id: addSignupDetails._id,
+      fullname: legal_first_name + ' ' + legal_middle_name + ' ' + legal_last_name,
+      university_name: university_name,
+      student_id: student_id,
+      university_address: university_address,
+      mobile_no: mobile,
+      gender: gender,
+      car_model: car_model,
+      destination_contact_number: destination_contact_number,
+      type: type,
+      gender_preferences: gender_preferences,
+      rider_preference: rider_preference,
+      phone_code: phone_code,
+      phone_no: phone_no,
+      profile_photo: profilePicture,
+      rating: "",
+      make, model, year, upload_vehicle_registration, upload_driver_licence, upload_inssurance_card, vehicle_license_plate_number
+    })
+
+    const addBackgroundChecks = new this.backgroundChecksModel({
+      driver_id: addSignupDetails._id,
+      legal_first_name: legal_first_name,
+      legal_middle_name: legal_middle_name,
+      legal_last_name: legal_last_name,
+      university_address: university_address,
+      license_number: license_number,
+      license_state: license_state,
+      zip_code: zip_code,
+      dob: dob,
+      ssn: ssn,
+      status: 1
+    })
+
+    await addSignupDetails.save();
+    await addProfileDetails.save();
+    await addBackgroundChecks.save();
+
+    if (addSignupDetails && addProfileDetails && addBackgroundChecks) {
+      return {
+        msg: "Successfully added",
+        statusCode: HttpStatus.OK
+      };
+    } else {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -326,6 +403,7 @@ export class DashboardService {
         })
         // .skip(skip)
         // .limit(limit)
+        .sort({ created_date: -1 })
         .exec();
 
       // Fetch background checks, user profiles, and trips in parallel
@@ -414,6 +492,81 @@ export class DashboardService {
       return updatedUserProfiles;
     } catch (error) {
       throw new Error(`Error counting users: ${error.message}`);
+    }
+  }
+
+  async addRider(AddDriverDto: AddDriverDto): Promise<any> {
+    const { type, profile_picture, university_name, student_id, university_address, mobile, email, password, gender, destination_contact_number, gender_preferences, rider_preference, phone_code, phone_no, legal_first_name, legal_middle_name, legal_last_name, license_number, license_state, zip_code, dob, ssn, make, model, year, upload_vehicle_registration, upload_driver_licence, upload_inssurance_card, car_model, vehicle_license_plate_number } =
+      AddDriverDto;
+    let user = await this.signupsModel.findOne({ email });
+    if (user) {
+      throw new HttpException("rider already exists", HttpStatus.BAD_REQUEST);
+    }
+
+    const hashed = password ? await bcrypt.hash(password, 10) : user.password;
+
+    const profilePicture = profile_picture ? profile_picture : "";
+
+    const addSignupDetails = new this.signupsModel({
+      email: email,
+      username: email,
+      password: hashed,
+      device_id: "",
+      device_token: "",
+      device_type: "",
+      email_verified: 0,
+      jwttoken: "",
+      otp: "",
+      refreshToken: "",
+      role_id: 2,
+      status: 1
+    })
+
+    const addProfileDetails = new this.profileModel({
+      profile_id: addSignupDetails._id,
+      fullname: legal_first_name + ' ' + legal_middle_name + ' ' + legal_last_name,
+      university_name: university_name,
+      student_id: student_id,
+      university_address: university_address,
+      mobile_no: mobile,
+      gender: gender,
+      car_model: car_model,
+      destination_contact_number: destination_contact_number,
+      type: type,
+      gender_preferences: gender_preferences,
+      rider_preference: rider_preference,
+      phone_code: phone_code,
+      phone_no: phone_no,
+      profile_photo: profilePicture,
+      rating: "",
+      make, model, year, upload_vehicle_registration, upload_driver_licence, upload_inssurance_card, vehicle_license_plate_number
+    })
+
+    const addBackgroundChecks = new this.backgroundChecksModel({
+      driver_id: addSignupDetails._id,
+      legal_first_name: legal_first_name,
+      legal_middle_name: legal_middle_name,
+      legal_last_name: legal_last_name,
+      university_address: university_address,
+      license_number: license_number,
+      license_state: license_state,
+      zip_code: zip_code,
+      dob: dob,
+      ssn: ssn,
+      status: 1
+    })
+
+    await addSignupDetails.save();
+    await addProfileDetails.save();
+    await addBackgroundChecks.save();
+
+    if (addSignupDetails && addProfileDetails && addBackgroundChecks) {
+      return {
+        msg: "Successfully added",
+        statusCode: HttpStatus.OK
+      };
+    } else {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -579,7 +732,6 @@ export class DashboardService {
     }
   }
 
-
   async deactiveTrip(DeactiveTripDTO: DeactiveTripDTO): Promise<any> {
     const { tripId } = DeactiveTripDTO;
     console.log(tripId)
@@ -606,7 +758,7 @@ export class DashboardService {
   async activateTrip(DeactiveTripDTO: DeactiveTripDTO): Promise<any> {
     try {
       const { tripId } = DeactiveTripDTO;
-      let trip = await this.userTripsModel.findOne({  _id: tripId });
+      let trip = await this.userTripsModel.findOne({ _id: tripId });
       if (!trip) {
         throw new HttpException('Trip doesnt exists', HttpStatus.BAD_REQUEST);
       }
@@ -629,7 +781,6 @@ export class DashboardService {
       throw new HttpException(error.response, HttpStatus.BAD_REQUEST);
     }
   }
-
 
   async getFeedbackList(page = 1, limit = 10, searchQuery?: string): Promise<any> {
     try {

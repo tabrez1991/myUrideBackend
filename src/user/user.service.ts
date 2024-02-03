@@ -153,16 +153,18 @@ export class UserService {
       AddUserDto;
     try {
       let user = await this.userModel.findOne({ email });
+  
       if (user) {
         throw new HttpException('user already exists', HttpStatus.BAD_REQUEST);
       }
 
-      const hashed = password ? await bcrypt.hash(password, 10) : user.password;
+      const hashed = password ? await bcrypt.hash(password, 10) : "";
 
-      const profilePicture = profile_picture ? profile_picture : user.profile_picture;
+      const profilePicture = profile_picture ? profile_picture : "";
 
       const addUserDetails = new this.userModel(
         {
+          email: email,
           name: name,
           middleName: middleName,
           lastName: lastName,
