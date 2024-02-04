@@ -6,6 +6,8 @@ import { UserTripsSchema } from '../models/usertrips.schema';
 import { ProfileSchema } from '../models/profile.schema';
 import { BackgroundChecksSchema } from '../models/backgroundchecks.schema';
 import { FeedbackSchema } from '../models/feedback.schema';
+import { FaqsSchema } from 'src/models/faqs.schema';
+import { SettingsSchema } from 'src/models/settings.schema';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { FeedbackSchema } from '../models/feedback.schema';
       { name: 'Profile', schema: ProfileSchema },
       { name: 'BackgroundChecks', schema: BackgroundChecksSchema },
       { name: 'Feedback', schema: FeedbackSchema },
+      { name: 'Settings', schema: SettingsSchema },
+      { name: 'Faqs', schema: FaqsSchema },
     ]),
   ],
   controllers: [],

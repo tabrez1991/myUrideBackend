@@ -13,6 +13,11 @@ import { Feedback } from '../models/feedback.schema';
 import { DeactiveTripDTO } from 'src/dto/deactivateTrip.dto';
 import { ObjectId } from 'mongodb';
 import { AddDriverDto } from 'src/dto/addDriver.dto.';
+import { Faqs } from 'src/models/faqs.schema';
+import { Settings } from 'src/models/settings.schema';
+import { AddQuestionFaqsDto } from 'src/dto/addQuestionFaq.dto';
+import { UpdateQuestionFaqsDto } from 'src/dto/updateQuestionFaq.dto';
+import { DeleteQuestionFaqsDto } from 'src/dto/deleteQuestionFaq.dto';
 
 @Injectable()
 export class DashboardService {
@@ -21,7 +26,9 @@ export class DashboardService {
     @InjectModel(UserTrips.name) private userTripsModel: Model<UserTrips>,
     @InjectModel(Profile.name) private profileModel: Model<Profile>,
     @InjectModel(BackgroundChecks.name) private backgroundChecksModel: Model<BackgroundChecks>,
-    @InjectModel(Feedback.name) private feedbackModel: Model<Feedback>) { }
+    @InjectModel(Feedback.name) private feedbackModel: Model<Feedback>,
+    @InjectModel(Faqs.name) private faqskModel: Model<Faqs>,
+    @InjectModel(Settings.name) private settingsModel: Model<Settings>) { }
 
   async getSignups(page = 1, limit = 10, searchQuery?: string): Promise<any[]> {
     const skip = (page - 1) * limit;
@@ -141,8 +148,8 @@ export class DashboardService {
           //   ],
           // }),
         })
-        // .skip(skip)
-        // .limit(limit)
+        .skip(skip)
+        .limit(limit)
         .sort({ created_date: -1 })
         .exec();
 
@@ -177,16 +184,6 @@ export class DashboardService {
         };
       });
 
-      // Return the result with pagination metadata
-      // return {
-      //   data: updatedUserProfiles,
-      //   metadata: {
-      //     page,
-      //     pageSize: limit,
-      //     total: totalDrivers,
-      //     totalPages: Math.ceil(totalDrivers / limit),
-      //   },
-      // };
       if (searchQuery) {
         const searchQueryLowerCase = searchQuery.toLowerCase();
 
@@ -203,7 +200,17 @@ export class DashboardService {
         return [...fullNameMatches, ...mobileNumberMatches];
       }
 
-      return updatedUserProfiles;
+      // Return the result with pagination metadata
+      return {
+        data: updatedUserProfiles,
+        metadata: {
+          page,
+          pageSize: limit,
+          total: totalDrivers,
+          totalPages: Math.ceil(totalDrivers / limit),
+        },
+      };
+      // return updatedUserProfiles;
     } catch (error) {
       throw new Error(`Error counting users: ${error.message}`);
     }
@@ -253,7 +260,13 @@ export class DashboardService {
       phone_no: phone_no,
       profile_photo: profilePicture,
       rating: "",
-      make, model, year, upload_vehicle_registration, upload_driver_licence, upload_inssurance_card, vehicle_license_plate_number
+      make: make,
+      model: car_model,
+      year: year,
+      upload_vehicle_registration: upload_vehicle_registration,
+      upload_driver_licence: upload_driver_licence,
+      upload_inssurance_card: upload_inssurance_card,
+      vehicle_license_plate_number: vehicle_license_plate_number
     })
 
     const addBackgroundChecks = new this.backgroundChecksModel({
@@ -820,4 +833,348 @@ export class DashboardService {
       throw new Error(`Error counting feedback: ${error.message}`);
     }
   }
+
+  // settings
+
+  async getSettings(): Promise<any> {
+    try {
+      const settings = await this.settingsModel.find();
+      return {
+        data: settings,
+        statusCode: HttpStatus.OK
+      };
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  // Privacy Policy
+  async addPrivacyPolicy(privacy_policy: string): Promise<any> {
+    try {
+      const addPrivacyPolicy = new this.settingsModel({
+        privacy_policy: privacy_policy
+      })
+      await addPrivacyPolicy.save();
+      if (addPrivacyPolicy) {
+        return {
+          msg: "Successfully added",
+          statusCode: HttpStatus.OK
+        };
+      } else {
+        throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async updatePrivacyPolicy(privacy_policy_id: string, privacy_policy: string): Promise<any> {
+    try {
+      const updatePrivacyPolicy = await this.settingsModel.updateOne(
+        { _id: new ObjectId(privacy_policy_id) },
+        {
+          privacy_policy: privacy_policy
+        })
+      if (updatePrivacyPolicy) {
+        return {
+          msg: "Successfully updated",
+          statusCode: HttpStatus.OK
+        };
+      } else {
+        throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async deletePrivacyPolicy(privacy_policy_id: string): Promise<any> {
+    try {
+      const deletePrivacyPolicy = await this.settingsModel.deleteOne(
+        { _id: new ObjectId(privacy_policy_id) })
+      if (deletePrivacyPolicy) {
+        return {
+          msg: "Successfully deleted",
+          statusCode: HttpStatus.OK
+        };
+      } else {
+        throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  // User Agreement,
+  async addUserAgreement(user_agreement: string): Promise<any> {
+    try {
+      const addUserAgreement = new this.settingsModel({
+        user_agreement: user_agreement
+      })
+      await addUserAgreement.save();
+      if (addUserAgreement) {
+        return {
+          msg: "Successfully added",
+          statusCode: HttpStatus.OK
+        };
+      } else {
+        throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async updateUserAgreement(user_agreement_id: string, user_agreement: string): Promise<any> {
+    try {
+      const updateUserAgreement = await this.settingsModel.updateOne(
+        { _id: new ObjectId(user_agreement_id) },
+        {
+          user_agreement: user_agreement
+        })
+      if (updateUserAgreement) {
+        return {
+          msg: "Successfully updated",
+          statusCode: HttpStatus.OK
+        };
+      } else {
+        throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async deleteUserAgreement(user_agreement_id: string): Promise<any> {
+    try {
+      const deleteUserAgreement = await this.settingsModel.deleteOne(
+        { _id: new ObjectId(user_agreement_id) })
+      if (deleteUserAgreement) {
+        return {
+          msg: "Successfully deleted",
+          statusCode: HttpStatus.OK
+        };
+      } else {
+        throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  // User Guidelines,
+  async addUserGuidelines(user_guidlines: string): Promise<any> {
+    try {
+      const addUserGuidelines = new this.settingsModel({
+        user_guidlines: user_guidlines
+      })
+      await addUserGuidelines.save();
+      if (addUserGuidelines) {
+        return {
+          msg: "Successfully added",
+          statusCode: HttpStatus.OK
+        };
+      } else {
+        throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async updateUserGuidelines(user_guidlines_id: string, user_guidlines: string): Promise<any> {
+    try {
+      const updateUserGuidlines = await this.settingsModel.updateOne(
+        { _id: new ObjectId(user_guidlines_id) },
+        {
+          user_guidlines: user_guidlines
+        })
+      if (updateUserGuidlines) {
+        return {
+          msg: "Successfully updated",
+          statusCode: HttpStatus.OK
+        };
+      } else {
+        throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async deleteUserGuidelines(user_guidlines_id: string): Promise<any> {
+    try {
+      const deleteUserGuildlines = await this.settingsModel.deleteOne(
+        { _id: new ObjectId(user_guidlines_id) })
+      if (deleteUserGuildlines) {
+        return {
+          msg: "Successfully deleted",
+          statusCode: HttpStatus.OK
+        };
+      } else {
+        throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  // Drivers Agreements,
+  async addDriversAgreements(driver_agreements: string): Promise<any> {
+    try {
+      const addDriversAgreements = new this.settingsModel({
+        driver_agreements: driver_agreements
+      })
+      await addDriversAgreements.save();
+      if (addDriversAgreements) {
+        return {
+          msg: "Successfully added",
+          statusCode: HttpStatus.OK
+        };
+      } else {
+        throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async updateDriversAgreements(driver_agreements_id: string, driver_agreements: string): Promise<any> {
+    try {
+      const updateDriversAgreements = await this.settingsModel.updateOne(
+        { _id: new ObjectId(driver_agreements_id) },
+        {
+          driver_agreements: driver_agreements
+        })
+      if (updateDriversAgreements) {
+        return {
+          msg: "Successfully updated",
+          statusCode: HttpStatus.OK
+        };
+      } else {
+        throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async deleteDriversAgreements(driver_agreements_id: string): Promise<any> {
+    try {
+      const deleteDriversAgreements = await this.settingsModel.deleteOne(
+        { _id: new ObjectId(driver_agreements_id) })
+      if (deleteDriversAgreements) {
+        return {
+          msg: "Successfully deleted",
+          statusCode: HttpStatus.OK
+        };
+      } else {
+        throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  // FAQs
+  async getFaqs(page = 1, limit = 10, searchQuery?: string): Promise<any> {
+    try {
+      const skip = (page - 1) * limit;
+
+      const countQuery: any = {
+        ...(searchQuery && {
+          $or: [
+            { question: { $regex: new RegExp(searchQuery, 'i') } },
+            { category: { $regex: new RegExp(searchQuery, 'i') } },
+          ],
+        })
+      };
+
+      const totalFaqs = await this.faqskModel.countDocuments(countQuery);
+
+      const faqs = await this.faqskModel
+        .find(countQuery)
+        .sort({ created_date: -1 })
+        .skip(skip)
+        .limit(limit)
+        .exec();
+
+      return {
+        data: faqs,
+        metadata: {
+          page,
+          pageSize: limit,
+          total: totalFaqs,
+          totalPages: Math.ceil(totalFaqs / limit),
+        },
+      };
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async addFaq(AddQuestionFaqsDto: AddQuestionFaqsDto): Promise<any> {
+    try {
+      const { questions, answer, category } = AddQuestionFaqsDto;
+      const addQuestonsFaqs = new this.faqskModel({
+        queston: questions,
+        answer: answer,
+        category: category
+      })
+      await addQuestonsFaqs.save();
+      if (addQuestonsFaqs) {
+        return {
+          msg: "Successfully added",
+          statusCode: HttpStatus.OK
+        };
+      } else {
+        throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async updateFaqs(UpdateQuestionFaqsDto: UpdateQuestionFaqsDto): Promise<any> {
+    try {
+      const { id, questions, answer, category } = UpdateQuestionFaqsDto;
+      const updateQuestonsFaqs = await this.faqskModel.updateOne(
+        { _id: new ObjectId(id) },
+        {
+          queston: questions,
+          answer: answer,
+          category: category
+        })
+      if (updateQuestonsFaqs) {
+        return {
+          msg: "Successfully update",
+          statusCode: HttpStatus.OK
+        };
+      } else {
+        throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async deleteFaqs(DeleteQuestionFaqsDto: DeleteQuestionFaqsDto): Promise<any> {
+    try {
+      const { id } = DeleteQuestionFaqsDto;
+      const deleteQuestonsFaqs = await this.faqskModel.deleteOne(
+        { _id: new ObjectId(id) },
+      )
+      if (deleteQuestonsFaqs) {
+        return {
+          msg: "Successfully deleted",
+          statusCode: HttpStatus.OK
+        };
+      } else {
+        throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
 }

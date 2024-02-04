@@ -27,6 +27,24 @@ export class Profile extends Document {
   @Prop({ type: String, default: null })
   car_model: string;
 
+  @Prop({ type: String, default: null })
+  make: string;
+
+  @Prop({ type: String, default: null })
+  year: string;
+
+  @Prop({ type: String, default: null })
+  upload_vehicle_registration: string;
+
+  @Prop({ type: String, default: null })
+  upload_driver_licence: string;
+
+  @Prop({ type: String, default: null })
+  upload_inssurance_card: string;
+
+  @Prop({ type: String, default: null })
+  vehicle_license_plate_number: string;
+
   @Prop({ type: String })
   destination_contact_number: string;
 

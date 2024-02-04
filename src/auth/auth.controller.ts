@@ -30,6 +30,9 @@ import { DeleteDriverDTO } from '../dto/deleteDriver.dto';
 import { DeactiveTripDTO } from 'src/dto/deactivateTrip.dto';
 import { AddUserDto } from 'src/dto/addUser.dto';
 import { AddDriverDto } from 'src/dto/addDriver.dto.';
+import { AddQuestionFaqsDto } from 'src/dto/addQuestionFaq.dto';
+import { UpdateQuestionFaqsDto } from 'src/dto/updateQuestionFaq.dto';
+import { DeleteQuestionFaqsDto } from 'src/dto/deleteQuestionFaq.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -183,7 +186,133 @@ export class AuthController {
     return this.dashboardService.getFeedbackList(page, limit, searchQuery);
   }
 
+  // settings
+  @Get('/settings')
+  async settingsDetails(
+  ): Promise<any[]> {
+    return this.dashboardService.getSettings();
+  }
 
+  // privacy policy
+  @Post('/add-privacy-policy')
+  async addPrivacyPolicy(
+    @Body() body: any,
+  ) {
+    return this.dashboardService.addPrivacyPolicy(body.addPrivacyPolicy);
+  }
+
+  @Post('/update-privacy-policy')
+  async updatePrivacyPolicy(
+    @Body() body: any,
+  ) {
+    return this.dashboardService.updatePrivacyPolicy(body.updatePrivacyPolicyId, body.updatePrivacyPolicy);
+  }
+
+  @Post('/delete-privacy-policy')
+  async deletePrivacyPolicy(
+    @Body() body: any,
+  ) {
+    return this.dashboardService.deletePrivacyPolicy(body.deletePrivacyPolicyId);
+  }
+
+  // User Agreement
+  @Post('/add-user-agreement')
+  async addUserAgreement(
+    @Body() body: any,
+  ) {
+    return this.dashboardService.addUserAgreement(body.user_agreement);
+  }
+
+  @Post('/update-user-agreement')
+  async updateUserAgreement(
+    @Body() body: any,
+  ) {
+    return this.dashboardService.updateUserAgreement(body.user_agreement_id, body.user_agreement);
+  }
+
+  @Post('/delete-user-agreement')
+  async deleteUserAgreement(
+    @Body() body: any,
+  ) {
+    return this.dashboardService.deleteUserAgreement(body.user_agreement_id);
+  }
+
+  // User Guidelines
+  @Post('/add-user-guidelines')
+  async addUserGuidelines(
+    @Body() body: any,
+  ) {
+    return this.dashboardService.addUserGuidelines(body.user_guidlines);
+  }
+
+  @Post('/update-user-guidelines')
+  async updateUserGuidelines(
+    @Body() body: any,
+  ) {
+    return this.dashboardService.updateUserGuidelines(body.user_guidlines_id, body.user_guidlines);
+  }
+
+  @Post('/delete-user-guidelines')
+  async deleteUserGuidelines(
+    @Body() body: any,
+  ) {
+    return this.dashboardService.deleteUserGuidelines(body.user_guidlines_id);
+  }
+
+  // Drivers Agreements
+  @Post('/add-driver-agreements')
+  async addDriversAgreements(
+    @Body() body: any,
+  ) {
+    return this.dashboardService.addDriversAgreements(body.driver_agreements);
+  }
+
+  @Post('/update-driver-agreements')
+  async updateDriversAgreements(
+    @Body() body: any,
+  ) {
+    return this.dashboardService.updateDriversAgreements(body.driver_agreements_id, body.driver_agreements);
+  }
+
+  @Post('/delete-driver-agreements')
+  async deleteDriversAgreements(
+    @Body() body: any,
+  ) {
+    return this.dashboardService.deleteDriversAgreements(body.driver_agreements_id);
+  }
+
+  // faqs
+  @Get('/faqs-list')
+  async faqsDetails(
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+    @Query('searchQuery') searchQuery: string,
+  ): Promise<any[]> {
+    return this.dashboardService.getFaqs(page, limit, searchQuery);
+  }
+
+  @Post('/add-faqs')
+  async addFaqs(
+    @Body() AddQuestionFaqsDto: AddQuestionFaqsDto,
+  ) {
+    return this.dashboardService.addFaq(AddQuestionFaqsDto);
+  }
+
+  @Post('/update-faqs')
+  async updateFaqs(
+    @Body() UpdateQuestionFaqsDto: UpdateQuestionFaqsDto,
+  ) {
+    return this.dashboardService.updateFaqs(UpdateQuestionFaqsDto);
+  }
+
+  @Post('/delete-faqs')
+  async deleteFaqs(
+    @Body() DeleteQuestionFaqsDto: DeleteQuestionFaqsDto,
+  ) {
+    return this.dashboardService.deleteFaqs(DeleteQuestionFaqsDto);
+  }
+
+ // user sign up
   @Post('register')
   async register(@Body() registerDTO: RegisterDTO) {
     const user = await this.userService.create(registerDTO);
