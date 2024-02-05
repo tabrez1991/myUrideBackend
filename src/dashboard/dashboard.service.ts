@@ -852,6 +852,7 @@ export class DashboardService {
   async addPrivacyPolicy(privacy_policy: string): Promise<any> {
     try {
       const addPrivacyPolicy = new this.settingsModel({
+        type: 'privacy_policy',
         privacy_policy: privacy_policy
       })
       await addPrivacyPolicy.save();
@@ -909,6 +910,7 @@ export class DashboardService {
   async addUserAgreement(user_agreement: string): Promise<any> {
     try {
       const addUserAgreement = new this.settingsModel({
+        type: 'user_agreement',
         user_agreement: user_agreement
       })
       await addUserAgreement.save();
@@ -966,6 +968,7 @@ export class DashboardService {
   async addUserGuidelines(user_guidlines: string): Promise<any> {
     try {
       const addUserGuidelines = new this.settingsModel({
+        type: 'user_guidlines',
         user_guidlines: user_guidlines
       })
       await addUserGuidelines.save();
@@ -1023,6 +1026,7 @@ export class DashboardService {
   async addDriversAgreements(driver_agreements: string): Promise<any> {
     try {
       const addDriversAgreements = new this.settingsModel({
+        type: 'driver_agreements',
         driver_agreements: driver_agreements
       })
       await addDriversAgreements.save();

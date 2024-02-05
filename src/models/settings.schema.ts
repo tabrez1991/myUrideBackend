@@ -4,6 +4,9 @@ import { Document } from 'mongoose';
 @Schema()
 export class Settings extends Document {
   @Prop({ type: String, })
+  type: string;
+
+  @Prop({ type: String, })
   privacy_policy: string;
 
   @Prop({ type: String })
