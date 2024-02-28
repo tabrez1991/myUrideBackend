@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { UserModule } from '../user/user.module';
 import { JwtStrategy } from './jwt.strategy';
-import { MulterModule } from '@nestjs/platform-express';
+// import { MulterModule } from '@nestjs/platform-express';
 import { ConfigModule } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
@@ -19,9 +19,9 @@ import { DashboardModule } from '../dashboard/dashboard.module';
     }),
     UserModule,
     DashboardModule,
-    MulterModule.register({
-      dest: './uploads',
-    }),
+    // MulterModule.register({
+    //   dest: './uploads',
+    // }),
   ],
   providers: [AuthService, JwtStrategy],
   controllers: [AuthController],
