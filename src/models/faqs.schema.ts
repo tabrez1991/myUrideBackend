@@ -4,13 +4,13 @@ import { Document } from 'mongoose';
 @Schema()
 export class Faqs extends Document {
   @Prop({ type: String })
-  queston: string;
+  title: string;
 
   @Prop({ type: String })
-  answer: string;
+  desc: string;
 
-  @Prop({ type: String })
-  category: string;
+  @Prop({ type: Date, default: Date.now })
+  updated_date: Date;
 
   @Prop({ type: Date, default: Date.now })
   created_date: Date;

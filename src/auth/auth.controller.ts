@@ -33,6 +33,7 @@ import { AddDriverDto } from '../dto/addDriver.dto.';
 import { AddQuestionFaqsDto } from '../dto/addQuestionFaq.dto';
 import { UpdateQuestionFaqsDto } from '../dto/updateQuestionFaq.dto';
 import { DeleteQuestionFaqsDto } from '../dto/deleteQuestionFaq.dto';
+import { CompleteBackgroundCheck } from 'src/dto/completeBackground.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -104,6 +105,11 @@ export class AuthController {
   @Post('/activate-driver')
   async activateDriver(@Body() DeleteDriverDTO: DeleteDriverDTO) {
     return await this.dashboardService.activateDriver(DeleteDriverDTO);
+  }
+
+  @Post('/complete-background-check')
+  async completeBackgroundCheck(@Body() CompleteBackgroundCheck: CompleteBackgroundCheck) {
+    return await this.dashboardService.completeBackgroundCheck(CompleteBackgroundCheck);
   }
 
   @Get('/riders-list')
@@ -310,6 +316,11 @@ export class AuthController {
     @Body() DeleteQuestionFaqsDto: DeleteQuestionFaqsDto,
   ) {
     return this.dashboardService.deleteFaqs(DeleteQuestionFaqsDto);
+  }
+
+  @Post('/do-something')
+  async doSomething() {
+    return this.dashboardService.doSomething();
   }
 
  // user sign up

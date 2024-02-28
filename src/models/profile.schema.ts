@@ -71,6 +71,9 @@ export class Profile extends Document {
 
   @Prop({ type: Date, default: Date.now })
   created_date: Date;
+
+  @Prop({ type: Number, default: 0})
+  backgroundPayStatus: number;
 }
 
 export const ProfileSchema = SchemaFactory.createForClass(Profile);

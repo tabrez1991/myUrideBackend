@@ -18,6 +18,7 @@ import { Settings } from '../models/settings.schema';
 import { AddQuestionFaqsDto } from '../dto/addQuestionFaq.dto';
 import { UpdateQuestionFaqsDto } from '../dto/updateQuestionFaq.dto';
 import { DeleteQuestionFaqsDto } from '../dto/deleteQuestionFaq.dto';
+import { CompleteBackgroundCheck } from 'src/dto/completeBackground.dto';
 
 @Injectable()
 export class DashboardService {
@@ -396,6 +397,34 @@ export class DashboardService {
       throw new HttpException(error.response, HttpStatus.BAD_REQUEST);
     }
   }
+
+  async completeBackgroundCheck(CompleteBackgroundCheck: CompleteBackgroundCheck): Promise<any> {
+    try {
+      const { id } = CompleteBackgroundCheck;
+      let user = await this.backgroundChecksModel.findOne({ driver_id: id });
+      if (!user) {
+        throw new HttpException('Driver doesnt exists', HttpStatus.BAD_REQUEST);
+      }
+
+      const updateSignUpDetails = await this.backgroundChecksModel.updateOne(
+        { driver_id: user.driver_id },
+        {
+          status: 1,
+        },
+      );
+      if (updateSignUpDetails) {
+        return {
+          msg: "Successfully Completed",
+          statusCode: HttpStatus.OK
+        };
+      } else {
+        throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    } catch (error) {
+      throw new HttpException(error.response, HttpStatus.BAD_REQUEST);
+    }
+  }
+
 
   async getRidersList(page = 1, limit = 10, searchQuery?: string): Promise<any> {
     try {
@@ -1121,9 +1150,10 @@ export class DashboardService {
     try {
       const { questions, answer, category } = AddQuestionFaqsDto;
       const addQuestonsFaqs = new this.faqskModel({
-        queston: questions,
-        answer: answer,
-        category: category
+        title: questions,
+        desc: answer,
+        updated_date: new Date(),
+        created_date: new Date()
       })
       await addQuestonsFaqs.save();
       if (addQuestonsFaqs) {
@@ -1145,9 +1175,9 @@ export class DashboardService {
       const updateQuestonsFaqs = await this.faqskModel.updateOne(
         { _id: new ObjectId(id) },
         {
-          queston: questions,
-          answer: answer,
-          category: category
+          title: questions,
+          desc: answer,
+          updated_date: new Date()
         })
       if (updateQuestonsFaqs) {
         return {
@@ -1176,6 +1206,14 @@ export class DashboardService {
       } else {
         throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
       }
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async doSomething(): Promise<any> {
+    try {
+      const something = await this.profileModel.updateMany({}, { $set: { backgroundPayStatus: 0 } })
     } catch (error) {
       throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
     }
