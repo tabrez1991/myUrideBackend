@@ -27,12 +27,12 @@ import { LogoutUserDTO } from '../dto/logoutUser.dto';
 import { DashboardService } from '../dashboard/dashboard.service';
 import { UpdateDriverDto } from '../dto/updateDriver.dto';
 import { DeleteDriverDTO } from '../dto/deleteDriver.dto';
-import { DeactiveTripDTO } from 'src/dto/deactivateTrip.dto';
-import { AddUserDto } from 'src/dto/addUser.dto';
-import { AddDriverDto } from 'src/dto/addDriver.dto.';
-import { AddQuestionFaqsDto } from 'src/dto/addQuestionFaq.dto';
-import { UpdateQuestionFaqsDto } from 'src/dto/updateQuestionFaq.dto';
-import { DeleteQuestionFaqsDto } from 'src/dto/deleteQuestionFaq.dto';
+import { DeactiveTripDTO } from '../dto/deactivateTrip.dto';
+import { AddUserDto } from '../dto/addUser.dto';
+import { AddDriverDto } from '../dto/addDriver.dto.';
+import { AddQuestionFaqsDto } from '../dto/addQuestionFaq.dto';
+import { UpdateQuestionFaqsDto } from '../dto/updateQuestionFaq.dto';
+import { DeleteQuestionFaqsDto } from '../dto/deleteQuestionFaq.dto';
 
 @Controller('auth')
 export class AuthController {

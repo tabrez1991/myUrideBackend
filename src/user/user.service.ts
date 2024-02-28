@@ -18,7 +18,7 @@ import { User } from '../models/user.schema';
 import { DeleteUserDTO } from '../dto/deleteUser.dto';
 import { UserStatus } from '../enums/userStatus.enum';
 import { LogoutUserDTO } from '../dto/logoutUser.dto';
-import { AddUserDto } from 'src/dto/addUser.dto';
+import { AddUserDto } from '../dto/addUser.dto';
 
 @Injectable()
 export class UserService {

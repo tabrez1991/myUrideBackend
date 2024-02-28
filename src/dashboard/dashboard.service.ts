@@ -10,14 +10,14 @@ import { UpdateDriverDto } from '../dto/updateDriver.dto';
 import * as bcrypt from 'bcrypt';
 import { DeleteDriverDTO } from '../dto/deleteDriver.dto';
 import { Feedback } from '../models/feedback.schema';
-import { DeactiveTripDTO } from 'src/dto/deactivateTrip.dto';
+import { DeactiveTripDTO } from '../dto/deactivateTrip.dto';
 import { ObjectId } from 'mongodb';
-import { AddDriverDto } from 'src/dto/addDriver.dto.';
-import { Faqs } from 'src/models/faqs.schema';
-import { Settings } from 'src/models/settings.schema';
-import { AddQuestionFaqsDto } from 'src/dto/addQuestionFaq.dto';
-import { UpdateQuestionFaqsDto } from 'src/dto/updateQuestionFaq.dto';
-import { DeleteQuestionFaqsDto } from 'src/dto/deleteQuestionFaq.dto';
+import { AddDriverDto } from '../dto/addDriver.dto.';
+import { Faqs } from '../models/faqs.schema';
+import { Settings } from '../models/settings.schema';
+import { AddQuestionFaqsDto } from '../dto/addQuestionFaq.dto';
+import { UpdateQuestionFaqsDto } from '../dto/updateQuestionFaq.dto';
+import { DeleteQuestionFaqsDto } from '../dto/deleteQuestionFaq.dto';
 
 @Injectable()
 export class DashboardService {

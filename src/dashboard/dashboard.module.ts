@@ -6,8 +6,8 @@ import { UserTripsSchema } from '../models/usertrips.schema';
 import { ProfileSchema } from '../models/profile.schema';
 import { BackgroundChecksSchema } from '../models/backgroundchecks.schema';
 import { FeedbackSchema } from '../models/feedback.schema';
-import { FaqsSchema } from 'src/models/faqs.schema';
-import { SettingsSchema } from 'src/models/settings.schema';
+import { FaqsSchema } from '../models/faqs.schema';
+import { SettingsSchema } from '../models/settings.schema';
 
 @Module({
   imports: [
